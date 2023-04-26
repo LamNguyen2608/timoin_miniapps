@@ -1,47 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { auth, database, databaseRealtime } from "../../../config/firebase";
 import { onValue, ref } from 'firebase/database';
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Legend, Line, Tooltip } from 'recharts';
+import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Legend, Line, Tooltip, Bar, BarChart, Cell } from 'recharts';
 import { SensorData } from '../general/schema';
 import { Box, Divider, Grid, Paper, Stack, Typography, colors, useTheme } from '@mui/material';
 import StatBox from '../general/StatBox';
 import TrafficIcon from "@mui/icons-material/Traffic";
 import { tokens } from '@/theme';
 import CardInfo from '../general/CardInfo';
-import { dateFormatter } from '../general/utils';
 
-type DustSensorProps = {
+type UVStrengthProps = {
 
 };
 
+const UVStrength: React.FC<UVStrengthProps> = () => {
+    const [uvData, setUVData] = useState<SensorData[]>([]);
+    const [tempData, setTempData] = useState<SensorData[]>([]);
+    const [humidData, setHumidData] = useState<SensorData[]>([]);
+    const uvRef = ref(databaseRealtime, 'uv');
+    const tempRef = ref(databaseRealtime, 'temp');
+    const humidRef = ref(databaseRealtime, 'humid');
 
-const DustSensor: React.FC<DustSensorProps> = () => {
-    const [dustData, setDustData] = useState<SensorData[]>([]);
-    const [pm25Data, setPm25Data] = useState<SensorData[]>([]);
-    const [co2Data, setCo2Data] = useState<SensorData[]>([]);
-    const dustRef = ref(databaseRealtime, 'dust');
-    const pm25Ref = ref(databaseRealtime, 'pm25');
-    const co2Ref = ref(databaseRealtime, 'co2');
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+    const uvColorsGenerator = (uv: number) => {
+        if (uv < 3) {
+            return "#67be4d"
+        } else if (uv > 3 && uv < 6) {
+            return "#fcbd22"
+        } else if (uv > 6 && uv < 8) {
+            return "#f66b34"
+        } else if (uv > 8 && uv < 10) {
+            return "#ee154a"
+        } else {
+            return "#7b439c"
+        }
+    }
+
     useEffect(() => {
         // Set up listener for real-time updates from Firebase Realtime Database
-        onValue(dustRef, (snapshot) => {
+        onValue(uvRef, (snapshot) => {
             const data = snapshot.val();
-            setDustData(Object.values(data))
+            setUVData(Object.values(data))
         });
-
-        onValue(pm25Ref, (snapshot) => {
+        onValue(tempRef, (snapshot) => {
             const data = snapshot.val();
-            setPm25Data(Object.values(data))
+            setTempData(Object.values(data))
         });
-
-        onValue(co2Ref, (snapshot) => {
+        onValue(humidRef, (snapshot) => {
             const data = snapshot.val();
-            setCo2Data(Object.values(data))
+            setHumidData(Object.values(data))
         });
     }, []);
+
+    const formatUVData = (data: SensorData[]) => {
+        const formattedData = data.map((record) => ({
+            ...record,
+            value: record.value > 11 ? 12 : record.value
+        }));
+        return formattedData;
+    };
+
+    const dateFormatter = (timestamp: number) => {
+        const date = new Date(timestamp * 1000);
+        console.log(date)
+        let hours = date.getHours().toString().padStart(2, '0');
+        let minutes = date.getMinutes().toString().padStart(2, '0')
+        return `${hours}:${minutes}`
+    };
     const getIncreasePercent = (data: SensorData[]) => {
         if (data.length > 0) {
             let increase = ((data[data.length - 1].value - data[data.length - 2].value)
@@ -52,58 +79,54 @@ const DustSensor: React.FC<DustSensorProps> = () => {
         }
     }
     return (
+
         <Stack
             direction="column"
         >
             <Typography
                 variant="h2"
-                color={colors.pink[500]}
+                color={colors.blue[500]}
                 fontSize={25}
                 fontWeight="bold"
                 gutterBottom>
-                Dust Intensity
+                UV Strength
             </Typography>
             <ResponsiveContainer aspect={2}>
-                <LineChart
-                    data={dustData.slice(-10)}
-                    margin={{ top: 0, right: 20, bottom: 20, left: -40 }}
-                >
+                <BarChart
+                    data={formatUVData(uvData)}
+                    margin={{ top: 0, right: 20, bottom: 20, left: -40 }} >
                     <XAxis
-                        fontStyle="bold"
-                        fontSize={11}
-                        tickMargin={15}
                         dataKey="timestamp"
                         tickFormatter={dateFormatter} />
-                    <YAxis fontSize={11} />
+                    <YAxis />
                     <Tooltip />
-                    <Line
-                        name="Dust sensor"
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#c6c5ff"
-                        strokeWidth={4}
-                        dot={{ color: colors.pink[600], strokeWidth: 1, r: 5 }}
-                        activeDot={{ color: colors.pink[600], strokeWidth: 1, r: 10 }} />
-                </LineChart>
+                    <Bar dataKey="value">
+                        {
+                            formatUVData(uvData).map((entry, index) => (
+                                <Cell key={`cell-${index}`} stroke={uvColorsGenerator(entry.value)} strokeWidth={index === 2 ? 4 : 1} />
+                            ))
+                        }
+                    </Bar>
+                </BarChart>
             </ResponsiveContainer>
             <Stack direction="row" spacing={2}>
                 <CardInfo
                     type="WARNING!"
-                    title="PM 2.5"
-                    subtitle="(ppm)"
-                    description="The current PM2.5 (51.3 ppm) in the air can possibly affect your health. Put on your jacket, or stay at home if possible."
+                    title="Temperature"
+                    subtitle="°C"
+                    description="The current temperature (31.3 ppm) can possibly cause dizziness and heat stroke. Put on your jacket, or stay at home if possible."
                     color={
                         "#FF0000"
                     }
                 />
                 <StatBox
                     title="PM2.5"
-                    subtitle={pm25Data.length > 0 ? pm25Data[pm25Data.length - 1].value.toFixed(2) : "0"}
-                    increase={getIncreasePercent(pm25Data)}
+                    subtitle={tempData.length > 0 ? tempData[tempData.length - 1].value.toFixed(2) : "0"}
+                    increase={getIncreasePercent(tempData)}
                     chart={
                         <ResponsiveContainer aspect={2}>
                             <LineChart
-                                data={pm25Data.slice(-20)}
+                                data={tempData.slice(-20)}
                                 margin={{ top: 20, right: 10, bottom: 0, left: 0 }}
                             >
                                 <XAxis
@@ -114,7 +137,7 @@ const DustSensor: React.FC<DustSensorProps> = () => {
                                 <Line
                                     type="monotone"
                                     dataKey="value"
-                                    stroke={colors.pink[600]}
+                                    stroke={colors.blue[600]}
                                     strokeWidth={2}
                                     dot={false}
                                     activeDot={false} />
@@ -124,18 +147,13 @@ const DustSensor: React.FC<DustSensorProps> = () => {
             </Stack>
             <Stack direction="row" spacing={2} alignItems="baseline">
                 <StatBox
-                    title="CO2"
-                    subtitle={co2Data.length > 0 ? co2Data[co2Data.length - 1].value.toFixed(2) : "0"}
-                    icon={
-                        <TrafficIcon
-                            sx={{ color: colors.blue[600], fontSize: "26px" }}
-                        />
-                    }
-                    increase={getIncreasePercent(co2Data)}
+                    title="Humidity"
+                    subtitle={humidData.length > 0 ? humidData[humidData.length - 1].value.toFixed(2) : "0"}
+                    increase={getIncreasePercent(humidData)}
                     chart={
                         <ResponsiveContainer aspect={2}>
                             <LineChart
-                                data={co2Data.slice(-20)}
+                                data={humidData.slice(-20)}
                                 margin={{ top: 20, right: 10, bottom: 0, left: 0 }}
                             >
                                 <XAxis
@@ -146,7 +164,7 @@ const DustSensor: React.FC<DustSensorProps> = () => {
                                 <Line
                                     type="monotone"
                                     dataKey="value"
-                                    stroke={colors.pink[600]}
+                                    stroke={colors.blue[600]}
                                     strokeWidth={2}
                                     dot={false}
                                     activeDot={false} />
@@ -155,15 +173,15 @@ const DustSensor: React.FC<DustSensorProps> = () => {
                     } />
                 <CardInfo
                     type="KNOWLEDGE"
-                    title="CO2"
-                    subtitle="(ppm)"
-                    description="Global energy-related CO2 emissions grew in 2022 by 0.9%, or 321 million tonnes. #SaveTheEarth"
+                    title="Humidity"
+                    subtitle="(%)"
+                    description="Humidity comes from water evaporating from lakes and oceans. Warmer water evaporates more quickly"
                     color={
-                        colors.pink[500]
+                        colors.blue[500]
                     }
                 />
             </Stack>
         </Stack>
     )
 }
-export default DustSensor;
+export default UVStrength;

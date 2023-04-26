@@ -10,6 +10,7 @@ import DustSensor from '../sensors/DustSensor';
 import { base } from '../general/colors'
 import { colors } from '@mui/material';
 import StatBox from './StatBox';
+import UVStrength from '../sensors/UVStrength';
 
 
 interface TabPanelProps {
@@ -83,7 +84,7 @@ export default function FullWidthTabs() {
                     <DustSensor />
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                    UV Strength
+                    <UVStrength />
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction}>
                     Traffic
