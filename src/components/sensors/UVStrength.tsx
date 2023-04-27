@@ -8,6 +8,7 @@ import StatBox from '../general/StatBox';
 import TrafficIcon from "@mui/icons-material/Traffic";
 import { tokens } from '@/theme';
 import CardInfo from '../general/CardInfo';
+import { dateFormatter } from '../general/utils';
 
 type UVStrengthProps = {
 
@@ -27,11 +28,11 @@ const UVStrength: React.FC<UVStrengthProps> = () => {
     const uvColorsGenerator = (uv: number) => {
         if (uv < 3) {
             return "#67be4d"
-        } else if (uv > 3 && uv < 6) {
+        } else if (uv >= 3 && uv < 6) {
             return "#fcbd22"
-        } else if (uv > 6 && uv < 8) {
+        } else if (uv >= 6 && uv < 8) {
             return "#f66b34"
-        } else if (uv > 8 && uv < 10) {
+        } else if (uv >= 8 && uv < 10) {
             return "#ee154a"
         } else {
             return "#7b439c"
@@ -57,18 +58,11 @@ const UVStrength: React.FC<UVStrengthProps> = () => {
     const formatUVData = (data: SensorData[]) => {
         const formattedData = data.map((record) => ({
             ...record,
-            value: record.value > 11 ? 12 : record.value
+            value: record.value < 100 ? parseFloat((record.value / 100).toFixed(2)) : (record.value / 100 - 1).toFixed(2)
         }));
         return formattedData;
     };
 
-    const dateFormatter = (timestamp: number) => {
-        const date = new Date(timestamp * 1000);
-        console.log(date)
-        let hours = date.getHours().toString().padStart(2, '0');
-        let minutes = date.getMinutes().toString().padStart(2, '0')
-        return `${hours}:${minutes}`
-    };
     const getIncreasePercent = (data: SensorData[]) => {
         if (data.length > 0) {
             let increase = ((data[data.length - 1].value - data[data.length - 2].value)
@@ -85,11 +79,11 @@ const UVStrength: React.FC<UVStrengthProps> = () => {
         >
             <Typography
                 variant="h2"
-                color={colors.blue[500]}
+                color={colors.purple[500]}
                 fontSize={25}
                 fontWeight="bold"
                 gutterBottom>
-                UV Strength
+                UV Intensity
             </Typography>
             <ResponsiveContainer aspect={2}>
                 <BarChart
@@ -120,7 +114,7 @@ const UVStrength: React.FC<UVStrengthProps> = () => {
                     }
                 />
                 <StatBox
-                    title="PM2.5"
+                    title="Temp"
                     subtitle={tempData.length > 0 ? tempData[tempData.length - 1].value.toFixed(2) : "0"}
                     increase={getIncreasePercent(tempData)}
                     chart={

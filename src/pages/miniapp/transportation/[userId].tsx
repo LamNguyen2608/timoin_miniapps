@@ -24,7 +24,6 @@ export default function Transportation() {
     return (
         <ColorModeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
-
                 <Box sx={{ pb: 7 }} >
                     <CssBaseline />
                     {value === 'records' && (

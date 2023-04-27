@@ -11,6 +11,8 @@ import { base } from '../general/colors'
 import { colors } from '@mui/material';
 import StatBox from './StatBox';
 import UVStrength from '../sensors/UVStrength';
+import TrafficReport from '../records/TrafficReport';
+import { CameraDataRealtime } from './schema';
 
 
 interface TabPanelProps {
@@ -47,7 +49,14 @@ function a11yProps(index: number) {
     };
 }
 
-export default function FullWidthTabs() {
+
+type TabProps = {
+    imageKeys: CameraDataRealtime[];
+    chosenCam: CameraDataRealtime;
+};
+
+
+const FullWidthTabs: React.FC<TabProps> = ({ imageKeys, chosenCam }) => {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
 
@@ -87,9 +96,11 @@ export default function FullWidthTabs() {
                     <UVStrength />
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction}>
-                    Traffic
+                    <TrafficReport imageKeys={imageKeys} chosenCam={chosenCam} />
                 </TabPanel>
             </SwipeableViews>
         </Box>
     );
 }
+
+export default FullWidthTabs

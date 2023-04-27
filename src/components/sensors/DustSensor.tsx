@@ -61,7 +61,7 @@ const DustSensor: React.FC<DustSensorProps> = () => {
                 fontSize={25}
                 fontWeight="bold"
                 gutterBottom>
-                Dust Intensity
+                Dust Density
             </Typography>
             <ResponsiveContainer aspect={2}>
                 <LineChart
