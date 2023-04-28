@@ -4,6 +4,7 @@ import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
+import { getStorage } from "firebase/storage";
 
 // const firebaseKey = {
 //   apiKey: process.env.API_KEY,
@@ -44,3 +45,4 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const database = getFirestore();
 export const databaseRealtime = getDatabase();
+export const storage = getStorage(app, "gs://delaynt-31feb.appspot.com");

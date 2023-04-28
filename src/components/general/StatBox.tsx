@@ -11,7 +11,6 @@ type StatBoxProps = {
     increase: string
 };
 
-
 const StatBox: React.FC<StatBoxProps> = ({ title, subtitle, increase, chart }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);

@@ -13,6 +13,7 @@ import { Box, CssBaseline, ThemeProvider } from '@mui/material';
 import Records from '@/components/transportation/Records';
 import Sensor from '@/components/transportation/Sensor';
 import { ColorModeContext, useMode } from '@/theme';
+import Estimation from '@/components/transportation/Estimation';
 
 export default function Transportation() {
     const [value, setValue] = React.useState('recents');
@@ -31,6 +32,9 @@ export default function Transportation() {
                     )}
                     {value === 'sensor' && (
                         <Sensor />
+                    )}
+                    {value === 'estimate' && (
+                        <Estimation />
                     )}
                     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
                         <BottomNavigation showLabels={true} value={value} onChange={handleChange}>

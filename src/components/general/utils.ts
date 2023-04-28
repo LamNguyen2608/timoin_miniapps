@@ -12,3 +12,13 @@ export const dateFormatter = (timestamp: number) => {
   let minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 };
+
+export const dateHHMMFormatter = (timestamp: number) => {
+  let hours = parseInt((timestamp / 60).toFixed(0))
+    .toString()
+    .padStart(2, "0");
+  let minutes = parseInt((timestamp % 60).toFixed(0))
+    .toString()
+    .padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
