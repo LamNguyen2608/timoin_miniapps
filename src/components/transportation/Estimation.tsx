@@ -7,6 +7,7 @@ import MapComponent from '../Estimation/Map';
 import { useTheme } from '@mui/material';
 import { tokens } from '@/theme';
 import { useState } from 'react';
+import EstimateTime from '../Estimation/EstimateTime';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -64,7 +65,7 @@ export default function Estimation() {
                 <MapComponent mapData={mapData} setMapData={setMapData} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                Item Two
+                <EstimateTime />
             </TabPanel>
         </Box>
     );

@@ -51,4 +51,19 @@ export type HistoryData = {
   rush_hour: number;
   traffic: number;
   AQI: number;
+  speed: number;
+  distance: number;
+};
+
+export type InsightData = {
+  max: {
+    distance: number;
+    estimate: number;
+  };
+  min: {
+    distance: number;
+    estimate: number;
+  };
+  sumSpeed: number;
+  validRecords: number;
 };

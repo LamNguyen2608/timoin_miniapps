@@ -103,7 +103,7 @@ const UVStrength: React.FC<UVStrengthProps> = () => {
                     </Bar>
                 </BarChart>
             </ResponsiveContainer>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2} marginRight={10}>
                 <CardInfo
                     type="WARNING!"
                     title="Temperature"

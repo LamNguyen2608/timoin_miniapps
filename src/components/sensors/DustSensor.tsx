@@ -90,8 +90,8 @@ const DustSensor: React.FC<DustSensorProps> = () => {
                 <CardInfo
                     type="WARNING!"
                     title="PM 2.5"
-                    subtitle="(ppm)"
-                    description="The current PM2.5 (51.3 ppm) in the air can possibly affect your health. Put on your jacket, or stay at home if possible."
+                    subtitle="(ug/cm3)"
+                    description={"The current PM2.5 (" + (pm25Data.length > 0 ? pm25Data[pm25Data.length - 1].value.toFixed(2) : "0") + ") in the air can possibly affect your health. Put on your jacket, or stay at home if possible."}
                     color={
                         "#FF0000"
                     }

@@ -6,12 +6,13 @@ import { title } from 'process';
 import React from 'react';
 import motorbike from '../../lotties/mbike1.json';
 import Lottie from 'react-lottie';
+import { InsightData } from '../general/schema';
 
 type UserVehicleProps = {
-
+    insightData: InsightData
 };
 
-const UserVehicle: React.FC<UserVehicleProps> = () => {
+const UserVehicle: React.FC<UserVehicleProps> = ({ insightData }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const defaultOptions = {
@@ -32,7 +33,7 @@ const UserVehicle: React.FC<UserVehicleProps> = () => {
                         MOTORBIKE
                     </Typography>
                     <Typography marginLeft={1} variant="value" component="div" fontWeight="bold">
-                        19.25
+                        {(insightData.sumSpeed / insightData.validRecords).toFixed(2)}
                     </Typography>
                     <Typography marginLeft={2} marginTop={-1} variant="h4" component="div" fontWeight="bold">
                         km/h
