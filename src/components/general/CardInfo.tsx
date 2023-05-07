@@ -15,7 +15,7 @@ const CardInfo: React.FC<CardInfoProps> = ({ type, title, subtitle, description,
     const colors = tokens(theme.palette.mode);
     return (
         <Box>
-            <Card sx={{ minWidth: 100 }}>
+            <Card sx={{ minWidth: 50 }}>
                 <CardContent>
                     <Typography
                         variant='h5'
