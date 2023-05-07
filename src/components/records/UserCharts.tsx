@@ -121,7 +121,7 @@ const UserChart: React.FC<UserChartsProps> = ({ historyData }) => {
                     marginLeft={0}
                 >
 
-                    <MyAnimation animationData={loading} />
+                    <MyAnimation animationData={loading} loop={true} autoplay={true} speed={1.25} />
                 </Box>
             )
             }

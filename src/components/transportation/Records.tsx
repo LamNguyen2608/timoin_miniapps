@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import UserVehicle from '../records/UserVehicle';
 import { Avatar, Box, Stack, Typography, useTheme } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
@@ -12,6 +12,7 @@ import Papa from 'papaparse';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { HistoryData, InsightData, UserCommuteData } from '../general/schema';
 import UserChart from '../records/UserCharts';
+import UserContext from '@/context/UserContext';
 
 type recordsProps = {
 
@@ -20,32 +21,12 @@ type recordsProps = {
 const Records: React.FC<recordsProps> = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const defaultOptions = {
-        loop: false,
-        autoplay: true,
-        animationData: avatar,
-        rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice"
-        },
-        segments: [
-            {
-                time: 0,
-                duration: 5,
-            },
-        ]
-    };
-    const defaultOptions1 = {
-        loop: true,
-        autoplay: true,
-        animationData: personalized,
-        rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice"
-        }
-    };
+    const { userData, setUserData } = useContext(UserContext);
+    console.log(userData);
 
     //GetUserHistoryData
     const csvRef = ref(storage, '/ZBa16LZrCvWGUHH6Tx72fHzu7br1/travel_history/thithien.csv');
-    const [userData, setUserData] = useState<HistoryData[]>([])
+    const [userHistoryData, setUserHistoryData] = useState<HistoryData[]>([])
     const [insightData, setInsightData] = useState<InsightData>({ max: { distance: 0, estimate: 0 }, min: { distance: 10000, estimate: 10000 }, sumSpeed: 0.0, validRecords: 0 });
     const fetchData = async () => {
         getDownloadURL(csvRef).then(url => {
@@ -54,7 +35,7 @@ const Records: React.FC<recordsProps> = () => {
                 header: true,
                 complete: results => {
                     const data = results.data as UserCommuteData[]; // This is a list of objects parsed from the CSV file
-                    setUserData(dataFormatter(data));
+                    setUserHistoryData(dataFormatter(data));
                 }
             });
         });
@@ -86,7 +67,7 @@ const Records: React.FC<recordsProps> = () => {
 
     useEffect(() => {
         let insight = { max: { distance: 0, estimate: 0 }, min: { distance: 10000, estimate: 10000 }, sumSpeed: 0, validRecords: 0 }
-        userData.forEach(item => {
+        userHistoryData.forEach(item => {
             if (item.distance > insight.max.distance) {
                 insight.max.distance = item.distance
             }
@@ -109,7 +90,7 @@ const Records: React.FC<recordsProps> = () => {
         localStorage.setItem("maxEstimation", insight.max.estimate.toFixed(2))
         localStorage.setItem("minDistance", insight.min.distance.toFixed(2))
         localStorage.setItem("minEstimation", insight.min.estimate.toFixed(2))
-    }, [userData])
+    }, [userHistoryData])
 
     return (
         <Stack direction="column" alignItems="center">
@@ -135,7 +116,7 @@ const Records: React.FC<recordsProps> = () => {
                 fontSize={25}
                 fontWeight="bold"
                 gutterBottom>
-                PSALM NGUYEN
+                {userData?.first_name + ' ' + userData?.last_name}
             </Typography>
             <Stack marginTop={3} alignItems="center" paddingLeft={2} paddingRight={1}>
                 <UserVehicle insightData={insightData} />
@@ -156,7 +137,7 @@ const Records: React.FC<recordsProps> = () => {
                 gutterBottom>
                 PERSONALIZED INSIGHT
             </Typography>
-            <UserChart historyData={userData} />
+            <UserChart historyData={userHistoryData} />
         </Stack>
     )
 }

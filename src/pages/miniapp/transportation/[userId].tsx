@@ -14,22 +14,30 @@ import { database } from 'config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { GetServerSidePropsContext } from 'next';
 import { UserData } from '@/components/general/schema';
-import UserContext, { defaultUserValue } from '@/context/UserContext';
+import UserContext from '@/context/UserContext';
 
+type TransportationProps = {
+    userDataFirebase: UserData;
+};
 
-export default function Transportation() {
+const Transportation: React.FC<TransportationProps> = ({ userDataFirebase }) => {
     const [value, setValue] = React.useState('records');
     const [theme, colorMode] = useMode();
     const themeColor = useTheme();
     const colors = tokens(themeColor.palette.mode);
-    const [userData, setUserData] = React.useState<UserData>(defaultUserValue);
+    const [userData, setUserData] = React.useState<UserData>();
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
 
+    React.useEffect(() => {
+        console.log(userDataFirebase);
+        setUserData(userDataFirebase);
+    }, [])
+
     return (
-        <UserContext.Provider value={{}}>
+        <UserContext.Provider value={{ userData, setUserData }}>
             <ColorModeContext.Provider value={colorMode}>
                 <ThemeProvider theme={theme}>
                     <Box sx={{ pb: 7 }} zIndex={1}>
@@ -69,6 +77,8 @@ export default function Transportation() {
     );
 }
 
+export default Transportation;
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const collectionRef = doc(database, "Users", context.query.userId as string);
     try {
@@ -77,7 +87,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         if (docSnap.exists()) {
             return {
                 props: {
-                    userData: docSnap.data()
+                    userDataFirebase: docSnap.data() as UserData
                 },
             };
         } else {
@@ -89,3 +99,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         return error;
     }
 }
+//JSON.parse(safeJsonStringify({ ...response.data })),
