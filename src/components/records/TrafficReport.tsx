@@ -87,9 +87,9 @@ const TrafficReport: React.FC<TrafficReportProps> = ({ imageKeys, chosenCam }) =
                     }
                 />
             </Stack>
-            {/* <StatBox
+            <StatBox
                 title="Traffic Monitoring Chart"
-                subtitle={}
+                subtitle={""}
                 increase={""}
                 chart={
                     <ResponsiveContainer aspect={2}>
@@ -103,7 +103,7 @@ const TrafficReport: React.FC<TrafficReportProps> = ({ imageKeys, chosenCam }) =
                             <Bar dataKey="traffic" fill={colors.purple[300]} />
                         </BarChart>
                     </ResponsiveContainer>
-                } /> */}
+                } />
         </Stack >
     )
 }

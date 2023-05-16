@@ -29,12 +29,12 @@ const DustSensor: React.FC<DustSensorProps> = () => {
         // Set up listener for real-time updates from Firebase Realtime Database
         onValue(dustRef, (snapshot) => {
             const data = snapshot.val();
-            setDustData(Object.values(data))
+            setDustData(formatDustDataRef(Object.values(data)))
         });
 
         onValue(pm25Ref, (snapshot) => {
             const data = snapshot.val();
-            setPm25Data(Object.values(data))
+            setPm25Data(formatDustDataRef(Object.values(data)))
         });
 
         onValue(co2Ref, (snapshot) => {
@@ -50,6 +50,13 @@ const DustSensor: React.FC<DustSensorProps> = () => {
         } else {
             return "+0.0 %"
         }
+    }
+
+    const formatDustDataRef = (data: SensorData[]) => {
+        return data.map((dust) => ({
+            ...dust,
+            value: parseFloat((dust.value * 0.35).toFixed(2))
+        }))
     }
     return (
         <Stack

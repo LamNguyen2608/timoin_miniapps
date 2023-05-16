@@ -17,7 +17,7 @@ const StatBox: React.FC<StatBoxProps> = ({ title, subtitle, increase, chart }) =
 
     return (
         <Box
-            sx={{ minWidth: 150 }}
+            sx={{ minWidth: 168 }}
             bgcolor={colors.blue[900]}
             padding={2}>
             <Box display="flex" justifyContent="space-between">

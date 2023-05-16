@@ -13,6 +13,7 @@ import { ref, getDownloadURL } from 'firebase/storage';
 import { HistoryData, InsightData, UserCommuteData } from '../general/schema';
 import UserChart from '../records/UserCharts';
 import UserContext from '@/context/UserContext';
+import { MultivariateLinearRegression } from "ml-regression";
 
 type recordsProps = {
 
@@ -90,6 +91,8 @@ const Records: React.FC<recordsProps> = () => {
         localStorage.setItem("maxEstimation", insight.max.estimate.toFixed(2))
         localStorage.setItem("minDistance", insight.min.distance.toFixed(2))
         localStorage.setItem("minEstimation", insight.min.estimate.toFixed(2))
+
+        
     }, [userHistoryData])
 
     return (
